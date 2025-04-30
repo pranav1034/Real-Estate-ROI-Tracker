@@ -1,5 +1,6 @@
 package com.cg.estate_tracker.config;
 
+import com.cg.estate_tracker.filter.JwtFilter;
 import com.cg.estate_tracker.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +21,8 @@ public class SpringSecurity {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception{
         return http.authorizeHttpRequests(request -> request
                 .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
@@ -27,6 +30,7 @@ public class SpringSecurity {
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
