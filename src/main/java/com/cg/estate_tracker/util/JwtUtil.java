@@ -16,12 +16,12 @@ public class JwtUtil {
     private String SECRET_KEY = "secretKeyhaibhaiiseysambhalkerakhio";
     UserDetails userDetails;
 
-    public String generateToken(String username){
+    public String generateToken(String email){
         Map<String,Object> claims = new HashMap<>();
         claims.put("roles",userDetails.getAuthorities().stream()
                 .map(auth -> auth.getAuthority())
                 .toList());
-        return createToken(claims,username);
+        return createToken(claims,email);
     }
 
     private String createToken(Map<String,Object> claims, String subject){
@@ -40,7 +40,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String extractUsername(String token){
+    public String extractEmail(String token){
         return extractAllClaims(token).getSubject();
     }
 
