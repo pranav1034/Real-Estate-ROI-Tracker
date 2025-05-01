@@ -3,6 +3,7 @@ package com.cg.estate_tracker.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -22,6 +24,8 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    private String otp;
 
     @Column(nullable = false)
     private String name;

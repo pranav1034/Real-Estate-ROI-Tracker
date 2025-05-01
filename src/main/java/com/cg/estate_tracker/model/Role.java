@@ -15,4 +15,8 @@ public class Role {
 
     private String name; // e.g., "ROLE_ADMIN", "ROLE_USER"
 
+    public Role(String role){
+        this.name = role;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.cg.estate_tracker.dtos;
 
 import com.cg.estate_tracker.model.Expense;
 import com.cg.estate_tracker.model.RentLog;
+import com.cg.estate_tracker.model.User;
 import lombok.Data;
 import java.util.List;
 

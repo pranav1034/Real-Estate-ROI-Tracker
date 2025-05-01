@@ -1,7 +1,8 @@
 package com.cg.estate_tracker.service;
 
 import com.cg.estate_tracker.dtos.PropertyDto;
-import com.cg.estate_tracker.dtos.Response;
+//import com.cg.estate_tracker.dtos.Response;
+import com.cg.estate_tracker.dtos.ResponseDTO;
 import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.repository.PropertyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ public class PropertyServiceImpl {
     @Autowired
     PropertyRepository propertyRepository;
 
-    public Response addProperty(PropertyDto property){
+    public ResponseDTO addProperty(PropertyDto property){
         Property newProperty = new Property();
         newProperty.setTitle(property.getTitle());
         newProperty.setLocation(property.getLocation());
@@ -31,6 +32,6 @@ public class PropertyServiceImpl {
         }
 
         propertyRepository.save(newProperty);
-        return new Response("New Property Added !",newProperty);
+        return new ResponseDTO("New Property Added !",newProperty);
     }
 }
