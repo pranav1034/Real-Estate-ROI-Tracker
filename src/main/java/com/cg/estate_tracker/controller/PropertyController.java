@@ -69,4 +69,23 @@ public class PropertyController {
             return new ResponseEntity<>(new ResponseDTO("Error deleting property",null),HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseDTO> updateProperty(@RequestBody PropertyDTO dto,@PathVariable Long id){
+       try{
+           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+           String email = authentication.getName();
+           User user = userRepository.findByEmail(email);
+           Optional<Property> obj = propertyRepository.findById(id);
+
+           if(obj.isPresent()){
+               return propertyService.updateProperty(obj.get(),dto,user,id);
+           }
+           else{
+               return new ResponseEntity<>(new ResponseDTO("Property not found",null),HttpStatus.NOT_FOUND);
+           }
+       }catch (Exception e){
+           return new ResponseEntity<>(new ResponseDTO("Error updating property",null),HttpStatus.BAD_REQUEST);
+       }
+    }
 }
