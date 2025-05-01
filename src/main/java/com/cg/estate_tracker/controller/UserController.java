@@ -1,8 +1,8 @@
 package com.cg.estate_tracker.controller;
 
+import com.cg.estate_tracker.dtos.ForgotPasswordDTO;
 import com.cg.estate_tracker.dtos.ResetPasswordDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
-import com.cg.estate_tracker.dtos.UserDTO;
 import com.cg.estate_tracker.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class UserController {
     private IUserService service;
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody UserDTO request) {
+    public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody ForgotPasswordDTO request) {
         return service.forgotPassword(request);
     }
 

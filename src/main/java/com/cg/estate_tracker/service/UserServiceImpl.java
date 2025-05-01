@@ -1,8 +1,6 @@
 package com.cg.estate_tracker.service;
 
-import com.cg.estate_tracker.dtos.ResetPasswordDTO;
-import com.cg.estate_tracker.dtos.ResponseDTO;
-import com.cg.estate_tracker.dtos.UserDTO;
+import com.cg.estate_tracker.dtos.*;
 import com.cg.estate_tracker.model.Role;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.UserRepository;
@@ -42,7 +40,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public ResponseEntity<ResponseDTO> registerUser(@RequestBody UserDTO request) {
+    public ResponseEntity<ResponseDTO> registerUser(@RequestBody RegisterDTO request) {
         if (userRepository.findByEmail(request.getEmail()) != null) {
             ResponseDTO response = new ResponseDTO("user already exists", HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -61,7 +59,7 @@ public class UserServiceImpl implements IUserService {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<ResponseDTO> loginUser(@RequestBody UserDTO request) {
+    public ResponseEntity<ResponseDTO> loginUser(@RequestBody LoginDTO request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -124,7 +122,7 @@ public class UserServiceImpl implements IUserService {
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody UserDTO request) {
+    public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody ForgotPasswordDTO request) {
         User user = userRepository.findByEmail(request.getEmail());
         if (user == null) {
             ResponseDTO response = new ResponseDTO("User not found", HttpStatus.NOT_FOUND);

@@ -1,8 +1,8 @@
 package com.cg.estate_tracker.controller;
 
+import com.cg.estate_tracker.dtos.LoginDTO;
+import com.cg.estate_tracker.dtos.RegisterDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
-import com.cg.estate_tracker.dtos.UserDTO;
-import com.cg.estate_tracker.repository.UserRepository;
 import com.cg.estate_tracker.service.IUserService;
 import com.cg.estate_tracker.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ public class PublicController {
     private IUserService service;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> registerUser(@RequestBody UserDTO request){
+    public ResponseEntity<ResponseDTO> registerUser(@RequestBody RegisterDTO request){
         return service.registerUser(request);
     }
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> loginUser(@RequestBody UserDTO request){
+    public ResponseEntity<ResponseDTO> loginUser(@RequestBody LoginDTO request){
         return service.loginUser(request);
     }
 }
