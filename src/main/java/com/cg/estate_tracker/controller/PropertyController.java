@@ -1,5 +1,4 @@
 package com.cg.estate_tracker.controller;
-
 import com.cg.estate_tracker.dtos.PropertyDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
 import com.cg.estate_tracker.model.Property;
@@ -57,7 +56,6 @@ public class PropertyController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             User user = userRepository.findByEmail(email);
-
             Optional<Property> obj = propertyRepository.findById(id);
 
             if(obj.isPresent()){
