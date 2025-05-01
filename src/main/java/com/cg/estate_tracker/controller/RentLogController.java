@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,12 +37,14 @@ public class RentLogController {
     IRentLogService rentLogService;
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseDTO> addRentLog(@RequestHeader("Authorization") String authHeader, @RequestBody RentDTO rent){
+    public ResponseEntity<ResponseDTO> addRentLog(@RequestBody RentDTO rent){
 
         log.info("Received request to add rent log for property ID: {}", rent.getPropertyID());
 
         // is user authenticated
-        User user = authenticateUser(authHeader);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
         // Does property exist or belongs to the user or not
         Optional<Property> propertyOpt = propertyRepository.findById(rent.getPropertyID());
 
@@ -64,33 +68,16 @@ public class RentLogController {
     }
 
     @GetMapping("/view/{propertyId}")
-    public ResponseEntity<ResponseDTO> viewRentLogs(@RequestHeader("Authorization") String authHeader,@PathVariable Long propertyId){
+    public ResponseEntity<ResponseDTO> viewRentLogs(@PathVariable Long propertyId){
         log.info("Received request to view rent logs for propertyId: {}", propertyId);
 
-        User user = authenticateUser(authHeader);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
 
         ResponseDTO responseDTO = rentLogService.viewRentLog(user,propertyId);
         log.info("Successfully fetched rent logs for propertyId: {}", propertyId);
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
-    }
-
-    private User authenticateUser(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization header is missing or invalid");
-        }
-
-        String token = authHeader.substring(7);
-        if (!jwtUtil.validateToken(token)) {
-            throw new ResponseStatusException(HttpStatus.REQUEST_TIMEOUT, "Login expired, login again");
-        }
-
-        String email = jwtUtil.extractEmail(token);
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
-        }
-
-        return user;
     }
 
 }
