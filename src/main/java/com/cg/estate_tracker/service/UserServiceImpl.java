@@ -2,6 +2,7 @@ package com.cg.estate_tracker.service;
 
 import com.cg.estate_tracker.dtos.ResponseDTO;
 import com.cg.estate_tracker.dtos.UserDTO;
+import com.cg.estate_tracker.model.Role;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.UserRepository;
 import com.cg.estate_tracker.util.JwtUtil;
@@ -15,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -52,6 +53,7 @@ public class UserServiceImpl implements IUserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         mailService.sendMail(request.getEmail(), "Registration Successful", "Welcome to the Estate Tracker System!");

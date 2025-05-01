@@ -1,10 +1,12 @@
 package com.cg.estate_tracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,12 +21,12 @@ public class Property {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String location;
 
     @Column(nullable = false)
@@ -37,8 +39,8 @@ public class Property {
     private double currentMarketValue;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
-    private List<RentLog> rentLogs;
+    private List<RentLog> rentLogs = new ArrayList<>();
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
-    private List<Expense> expenses;
+    private List<Expense> expenses = new ArrayList<>();
 }

@@ -23,7 +23,6 @@ public class UserDTO {
         this.email = email;
         this.password = password;
         this.name = name;
-        roles.add(new Role("USER"));
     }
 
     public UserDTO(String email, String password) {
