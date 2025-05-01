@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class RentLogServiceImpl {
+public class RentLogServiceImpl implements IRentLogService {
 
     @Autowired
     RentRepository rentRepository;
@@ -20,7 +20,7 @@ public class RentLogServiceImpl {
     @Autowired
     PropertyRepository propertyRepository;
 
-    public ResponseDTO addRent(RentDTO rentDTO){
+    public ResponseDTO addRentLog(RentDTO rentDTO){
         RentLog rentLog = new RentLog();
         rentLog.setAmount(rentDTO.getAmount());
         rentLog.setDateReceived(rentDTO.getDateReceived());

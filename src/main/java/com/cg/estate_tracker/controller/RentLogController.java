@@ -62,7 +62,7 @@ public class RentLogController {
 
         // adding rent log for the property
 
-        ResponseDTO responseDTO = rentLogService.addRent(rent);
+        ResponseDTO responseDTO = rentLogService.addRentLog(rent);
 
 
         ResponseDTO response = new ResponseDTO("Rent added successfully.",rent);
