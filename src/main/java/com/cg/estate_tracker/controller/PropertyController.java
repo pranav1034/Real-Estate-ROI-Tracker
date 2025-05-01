@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user/property")
 public class PropertyController {
+
     private final UserRepository userRepository;
+
     @Autowired
     PropertyServiceImpl propertyService;
 
