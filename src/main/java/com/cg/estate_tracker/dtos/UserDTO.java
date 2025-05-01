@@ -19,17 +19,6 @@ public class UserDTO {
 
     List<Property> properties;
 
-    public UserDTO(String email, String password, String name) {
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
-
-    public UserDTO(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
     public UserDTO(String email){
         this.email = email;
     }

@@ -1,41 +1,29 @@
 package com.cg.estate_tracker.controller;
 
+import com.cg.estate_tracker.dtos.ResetPasswordDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
 import com.cg.estate_tracker.dtos.UserDTO;
-import com.cg.estate_tracker.model.User;
-import com.cg.estate_tracker.repository.UserRepository;
 import com.cg.estate_tracker.service.IUserService;
-import com.cg.estate_tracker.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/public/auth")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private IUserService service;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @GetMapping("/getAllUsers")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody UserDTO request) {
+        return service.forgotPassword(request);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> registerUser(@RequestBody UserDTO request){
-        return service.registerUser(request);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> loginUser(@RequestBody UserDTO request){
-        return service.loginUser(request);
+    @PostMapping("/resetPassword")
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody ResetPasswordDTO request){
+        return service.resetPassword(request);
     }
 }
