@@ -50,4 +50,32 @@ public class PropertyServiceImpl implements IPropertyService {
             return new ResponseEntity<>(new ResponseDTO("Property deleted successfully",null),HttpStatus.NO_CONTENT);
         }
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO> updateProperty(Property property,PropertyDTO dto, User user, Long id) {
+        if(!property.getUser().getId().equals(user.getId())){
+            return new ResponseEntity<>(new ResponseDTO("User not authenticated",null),HttpStatus.UNAUTHORIZED);
+        }
+
+        property.setTitle(dto.getTitle());
+        property.setLocation(dto.getLocation());
+        property.setSize(dto.getSize());
+        property.setPurchasePrice(dto.getPurchasePrice());
+        property.setCurrentMarketValue(dto.getCurrentMarketValue());
+
+        if (dto.getRentLogs() != null) {
+            dto.getRentLogs().forEach(r -> r.setProperty(property));
+            property.setRentLogs(property.getRentLogs());
+        }
+
+        if (dto.getExpenses() != null) {
+            dto.getExpenses().forEach(e -> e.setProperty(property));
+            property.setExpenses(property.getExpenses());
+        }
+        propertyRepository.save(property);
+        return new ResponseEntity<>(new ResponseDTO("Property Updated !",property), HttpStatus.OK);
+    }
+
+
+
 }
