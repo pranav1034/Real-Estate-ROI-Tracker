@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PropertyServiceImpl implements PropertyService {
+public class PropertyServiceImpl implements IPropertyService {
 
     @Autowired
     PropertyRepository propertyRepository;
@@ -37,5 +37,17 @@ public class PropertyServiceImpl implements PropertyService {
 
         propertyRepository.save(newProperty);
         return new ResponseEntity<>(new ResponseDTO("New Property Added !",newProperty), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> deleteProperty(Property property,User user,Long id) {
+
+        if(!property.getUser().getId().equals(user.getId())){
+            return new ResponseEntity<>(new ResponseDTO("User not authenticated",null),HttpStatus.UNAUTHORIZED);
+        }
+        else{
+            propertyRepository.delete(property);
+            return new ResponseEntity<>(new ResponseDTO("Property deleted successfully",null),HttpStatus.NO_CONTENT);
+        }
     }
 }

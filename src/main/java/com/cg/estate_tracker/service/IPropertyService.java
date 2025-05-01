@@ -2,9 +2,12 @@ package com.cg.estate_tracker.service;
 
 import com.cg.estate_tracker.dtos.PropertyDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
+import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.model.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
-public interface PropertyService {
+public interface IPropertyService {
     public ResponseEntity<ResponseDTO> addProperty(PropertyDTO property, User user);
+    public ResponseEntity<ResponseDTO> deleteProperty(Property property,User user, @PathVariable Long id);
 }
