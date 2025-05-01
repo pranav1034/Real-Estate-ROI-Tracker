@@ -1,5 +1,6 @@
 package com.cg.estate_tracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class RentLog {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
 

@@ -6,17 +6,20 @@ import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.PropertyRepository;
 import com.cg.estate_tracker.repository.UserRepository;
-import com.cg.estate_tracker.service.RentLogServiceImpl;
+import com.cg.estate_tracker.service.IRentLogService;
 import com.cg.estate_tracker.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/user/rent-log")
+@Slf4j
 public class RentLogController {
 
     @Autowired
@@ -29,27 +32,20 @@ public class RentLogController {
     PropertyRepository propertyRepository;
 
     @Autowired
-    RentLogServiceImpl rentLogService;
+    IRentLogService rentLogService;
 
     @PostMapping("/add")
     public ResponseEntity<ResponseDTO> addRentLog(@RequestHeader("Authorization") String authHeader, @RequestBody RentDTO rent){
 
-        // is user authenticated
-        String token = "";
-        String email = "";
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            token = authHeader.substring(7);
-            if(!jwtUtil.validateToken(token)) {
-                return new ResponseEntity<>(new ResponseDTO("Login Expired,login again",null),HttpStatus.REQUEST_TIMEOUT);
-            }
-                email = jwtUtil.extractEmail(token);
-        }
+        log.info("Received request to add rent log for property ID: {}", rent.getPropertyID());
 
+        // is user authenticated
+        User user = authenticateUser(authHeader);
         // Does property exist or belongs to the user or not
-        User user = userRepository.findByEmail(email);
         Optional<Property> propertyOpt = propertyRepository.findById(rent.getPropertyID());
 
         if (propertyOpt.isEmpty()) {
+            log.error("Property with ID {} not found.", rent.getPropertyID());
             return new ResponseEntity<>(new ResponseDTO("Property not found.",null),HttpStatus.NOT_FOUND);
         }
 
@@ -57,16 +53,44 @@ public class RentLogController {
                 .anyMatch(p -> p.getId() == rent.getPropertyID());
 
         if (!isUserProperty) {
+            log.warn("User {} attempted to access property ID {} which they do not own.", user.getEmail(), rent.getPropertyID());
             return new ResponseEntity<>(new ResponseDTO("You do not own this property.",null),HttpStatus.FORBIDDEN);
         }
 
         // adding rent log for the property
-
         ResponseDTO responseDTO = rentLogService.addRentLog(rent);
-
-
-        ResponseDTO response = new ResponseDTO("Rent added successfully.",rent);
+        log.info("Rent log added successfully for property ID {}.", rent.getPropertyID());
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/view/{propertyId}")
+    public ResponseEntity<ResponseDTO> viewRentLogs(@RequestHeader("Authorization") String authHeader,@PathVariable Long propertyId){
+        log.info("Received request to view rent logs for propertyId: {}", propertyId);
+
+        User user = authenticateUser(authHeader);
+
+        ResponseDTO responseDTO = rentLogService.viewRentLog(user,propertyId);
+        log.info("Successfully fetched rent logs for propertyId: {}", propertyId);
+        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
+    }
+
+    private User authenticateUser(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization header is missing or invalid");
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtUtil.validateToken(token)) {
+            throw new ResponseStatusException(HttpStatus.REQUEST_TIMEOUT, "Login expired, login again");
+        }
+
+        String email = jwtUtil.extractEmail(token);
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+
+        return user;
     }
 
 }
