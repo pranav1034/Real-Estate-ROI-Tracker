@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class PropertyServiceImpl implements IPropertyService {
@@ -27,6 +26,7 @@ public class PropertyServiceImpl implements IPropertyService {
         newProperty.setTitle(property.getTitle());
         newProperty.setUser(user);
         newProperty.setLocation(property.getLocation());
+        newProperty.setPurchaseDate(property.getPurchaseDate());
         newProperty.setSize(property.getSize());
         newProperty.setPurchasePrice(property.getPurchasePrice());
         newProperty.setCurrentMarketValue(property.getCurrentMarketValue());
@@ -67,6 +67,7 @@ public class PropertyServiceImpl implements IPropertyService {
         property.setTitle(dto.getTitle());
         property.setLocation(dto.getLocation());
         property.setSize(dto.getSize());
+        property.setPurchaseDate(dto.getPurchaseDate());
         property.setPurchasePrice(dto.getPurchasePrice());
         property.setCurrentMarketValue(dto.getCurrentMarketValue());
 
@@ -81,6 +82,23 @@ public class PropertyServiceImpl implements IPropertyService {
         }
         propertyRepository.save(property);
         return new ResponseEntity<>(new ResponseDTO("Property Updated !",property), HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponseDTO> viewProperty(Long id,User user){
+        List<Property> propertyList = user.getProperties();
+        Property property = null;
+
+        for(Property p : propertyList){
+            if(id.equals(p.getId())){
+                property = p;
+                break;
+            }
+        }
+
+        if(property == null) return new ResponseEntity<>(new ResponseDTO("Property not found !",null),HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(new ResponseDTO("Property fetched !",property),HttpStatus.OK);
+
     }
 
 }

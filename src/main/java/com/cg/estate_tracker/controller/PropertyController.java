@@ -88,4 +88,17 @@ public class PropertyController {
            return new ResponseEntity<>(new ResponseDTO("Error updating property",null),HttpStatus.BAD_REQUEST);
        }
     }
+
+    @GetMapping("/view-property/{id}")
+    public ResponseEntity<ResponseDTO> viewProperty(@PathVariable Long id){
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            User user = userRepository.findByEmail(email);
+
+            return propertyService.viewProperty(id,user);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO("Error getting property",null),HttpStatus.BAD_REQUEST);
+        }
+    }
 }

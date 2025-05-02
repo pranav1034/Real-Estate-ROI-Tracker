@@ -11,4 +11,5 @@ public interface IPropertyService {
     public ResponseEntity<ResponseDTO> addProperty(PropertyDTO property, User user);
     public ResponseEntity<ResponseDTO> deleteProperty(Property property,User user, @PathVariable Long id);
     public ResponseEntity<ResponseDTO> updateProperty(Property property,PropertyDTO dto,User user, @PathVariable Long id);
+    public ResponseEntity<ResponseDTO> viewProperty(@PathVariable Long id,User user);
 }

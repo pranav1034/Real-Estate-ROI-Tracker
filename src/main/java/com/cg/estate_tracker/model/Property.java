@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public class Property {
 
     @Column(nullable = false)
     private double size;
+
+    @Column(nullable = false)
+    private LocalDate purchaseDate;
 
     @Column(nullable = false)
     private double purchasePrice;
