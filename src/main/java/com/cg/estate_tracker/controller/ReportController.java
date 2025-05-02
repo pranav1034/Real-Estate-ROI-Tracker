@@ -3,7 +3,6 @@ package com.cg.estate_tracker.controller;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.UserRepository;
 import com.cg.estate_tracker.service.IReportService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
