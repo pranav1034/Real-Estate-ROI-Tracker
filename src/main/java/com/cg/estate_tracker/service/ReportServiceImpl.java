@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -33,7 +34,21 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public byte[] generateUserReport(User user, LocalDate date) {
         List<Property> properties = propertyRepository.findByUserId(user.getId());
+        return buildPdfResponse(user, date, properties);
+    }
 
+    @Override
+    public byte[] generatePropertyReport(User user, Long propertyId, LocalDate date) {
+        Optional<Property> propertyOpt = propertyRepository.findById(propertyId);
+
+        if (propertyOpt.isEmpty() || !propertyOpt.get().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Property not found or does not belong to the user");
+        }
+
+        return buildPdfResponse(user, date, List.of(propertyOpt.get()));
+    }
+
+    private byte[] buildPdfResponse(User user, LocalDate date, List<Property> properties) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(out);
         PdfDocument pdf = new PdfDocument(writer);
@@ -51,12 +66,10 @@ public class ReportServiceImpl implements IReportService {
             document.add(new Paragraph("Purchase Date: " + property.getPurchaseDate()));
             document.add(new Paragraph("Purchase Price: ₹" + property.getPurchasePrice()));
 
-            double appreciationRate = 0.01;  // 1% per month
-            long monthsBetweenPurchaseAndDate = Period.between(property.getPurchaseDate(), date).getMonths();
-            double estimatedMarketValue = property.getPurchasePrice() * Math.pow(1 + appreciationRate, monthsBetweenPurchaseAndDate);
-
-            String formattedEstimatedMarketValue = String.format("%.2f", estimatedMarketValue);
-            document.add(new Paragraph("Estimated Market Value (as of " + date + "): ₹" + formattedEstimatedMarketValue));
+            double appreciationRate = 0.01;
+            long monthsBetween = Period.between(property.getPurchaseDate(), date).getMonths();
+            double estimatedMarketValue = property.getPurchasePrice() * Math.pow(1 + appreciationRate, monthsBetween);
+            document.add(new Paragraph("Estimated Market Value (as of " + date + "): ₹" + String.format("%.2f", estimatedMarketValue)));
 
             LocalDate firstRentLogDate = property.getRentLogs().stream()
                     .map(RentLog::getDateReceived)
@@ -66,7 +79,7 @@ public class ReportServiceImpl implements IReportService {
             long monthsRent = Period.between(firstRentLogDate, date).getMonths();
             double totalRent = property.getRentLogs().stream()
                     .filter(r -> !r.getDateReceived().isAfter(date))
-                    .mapToDouble(rentLog -> rentLog.getAmount() * monthsRent)
+                    .mapToDouble(r -> r.getAmount() * monthsRent)
                     .sum();
 
             double monthlyRent = property.getRentLogs().stream()
@@ -75,10 +88,7 @@ public class ReportServiceImpl implements IReportService {
                     .findFirst()
                     .orElse(0.0);
 
-// Calculate annual rent as 12 * monthly rent
             double annualRent = monthlyRent * 12;
-
-// Rental yield = (Annual Rent / Estimated Market Value) * 100
             double rentalYield = (annualRent / estimatedMarketValue) * 100;
 
             double totalExpense = property.getExpenses().stream()
@@ -87,10 +97,7 @@ public class ReportServiceImpl implements IReportService {
                     .sum();
 
             double gains = (estimatedMarketValue - property.getPurchasePrice()) + totalRent;
-
             double roi = (gains - totalExpense) / property.getPurchasePrice() * 100;
-
-//            double rentalYield = (totalRent / property.getCurrentMarketValue()) * 100;
 
             Table metrics = new Table(2);
             metrics.addCell("Total Rent Received");
@@ -101,8 +108,8 @@ public class ReportServiceImpl implements IReportService {
             metrics.addCell(String.format("%.2f%%", roi));
             metrics.addCell("Rental Yield (%)");
             metrics.addCell(String.format("%.2f%%", rentalYield));
-            document.add(metrics);
 
+            document.add(metrics);
             document.add(new Paragraph("\n"));
         }
 

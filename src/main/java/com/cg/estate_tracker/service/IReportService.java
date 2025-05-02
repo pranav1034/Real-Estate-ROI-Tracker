@@ -6,4 +6,6 @@ import java.time.LocalDate;
 
 public interface IReportService {
     byte[] generateUserReport(User user, LocalDate date);
+
+    byte[] generatePropertyReport(User user, Long propertyId, LocalDate date);
 }
