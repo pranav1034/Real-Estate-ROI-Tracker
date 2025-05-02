@@ -6,16 +6,21 @@ import com.cg.estate_tracker.dtos.ResponseDTO;
 import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.PropertyRepository;
+import com.cg.estate_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class PropertyServiceImpl implements IPropertyService {
 
     @Autowired
     PropertyRepository propertyRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public ResponseEntity<ResponseDTO> addProperty(PropertyDTO property, User user){
         Property newProperty = new Property();
@@ -36,6 +41,8 @@ public class PropertyServiceImpl implements IPropertyService {
         }
 
         propertyRepository.save(newProperty);
+        user.getProperties().add(newProperty);
+        userRepository.save(user);
         return new ResponseEntity<>(new ResponseDTO("New Property Added !",newProperty), HttpStatus.CREATED);
     }
 
@@ -75,7 +82,5 @@ public class PropertyServiceImpl implements IPropertyService {
         propertyRepository.save(property);
         return new ResponseEntity<>(new ResponseDTO("Property Updated !",property), HttpStatus.OK);
     }
-
-
 
 }
