@@ -51,6 +51,7 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
+        user.setProperties(new ArrayList<>());
         userRepository.save(user);
 
         mailService.sendMail(request.getEmail(), "Registration Successful", "Welcome to the Estate Tracker System!");
