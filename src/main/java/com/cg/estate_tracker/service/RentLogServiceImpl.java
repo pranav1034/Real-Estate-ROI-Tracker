@@ -34,7 +34,10 @@ public class RentLogServiceImpl implements IRentLogService {
         log.info("Adding rent log for property ID: {}", propertyId);
 
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new EntityNotFoundException("Property not found."));
+                .orElseThrow(() -> {
+                    log.error("Property not found: {}", propertyId);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Property not found");
+                });
 
         boolean isUserProperty = user.getProperties().stream()
                 .anyMatch(p -> p.getId().equals(propertyId));

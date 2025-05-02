@@ -2,13 +2,12 @@ package com.cg.estate_tracker.controller;
 
 import com.cg.estate_tracker.dtos.RentDTO;
 import com.cg.estate_tracker.dtos.ResponseDTO;
-import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.model.User;
-import com.cg.estate_tracker.repository.PropertyRepository;
 import com.cg.estate_tracker.repository.UserRepository;
+import com.cg.estate_tracker.service.AuthenticationService;
 import com.cg.estate_tracker.service.IRentLogService;
-import com.cg.estate_tracker.util.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,24 +26,20 @@ import java.util.Optional;
 public class RentLogController {
 
     @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    PropertyRepository propertyRepository;
+    AuthenticationService authenticationService;
 
     @Autowired
     IRentLogService rentLogService;
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseDTO> addRentLog(@RequestBody RentDTO rent) {
+    public ResponseEntity<ResponseDTO> addRentLog(@Valid @RequestBody RentDTO rent) {
         log.info("Received request to add rent log for property ID: {}", rent.getPropertyID());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email);
+        String email = authenticationService.getAuthenticatedUserEmail();
+        User user = authenticationService.getAuthenticatedUser();
+        if (user == null){
+            return new ResponseEntity<>(new ResponseDTO("User not found with email: " + email, null), HttpStatus.NOT_FOUND);
+        }
 
         try {
             ResponseDTO responseDTO = rentLogService.addRentLog(user, rent);
@@ -65,9 +60,11 @@ public class RentLogController {
     public ResponseEntity<ResponseDTO> viewRentLogs(@PathVariable Long propertyId) {
         log.info("Received request to view rent logs for propertyId: {}", propertyId);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email);
+        String email = authenticationService.getAuthenticatedUserEmail();
+        User user = authenticationService.getAuthenticatedUser();
+        if (user == null){
+            return new ResponseEntity<>(new ResponseDTO("User not found with email: " + email, null), HttpStatus.NOT_FOUND);
+        }
 
         try {
             ResponseDTO responseDTO = rentLogService.viewRentLog(user, propertyId);
