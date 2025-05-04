@@ -7,6 +7,7 @@ import com.cg.estate_tracker.model.Property;
 import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.PropertyRepository;
 import com.cg.estate_tracker.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PropertyServiceImpl implements IPropertyService {
 
     @Autowired
@@ -44,6 +46,7 @@ public class PropertyServiceImpl implements IPropertyService {
         propertyRepository.save(newProperty);
         user.getProperties().add(newProperty);
         userRepository.save(user);
+        log.info("Property added successfully:");
         return new ResponseEntity<>(new ResponseDTO("New Property Added !",property), HttpStatus.CREATED);
     }
 
@@ -51,10 +54,12 @@ public class PropertyServiceImpl implements IPropertyService {
     public ResponseEntity<ResponseDTO> deleteProperty(Property property,User user,Long id) {
 
         if(!property.getUser().getId().equals(user.getId())){
+            log.warn("User not authenticated for property ID: {}", id);
             return new ResponseEntity<>(new ResponseDTO("User not authenticated",null),HttpStatus.UNAUTHORIZED);
         }
         else{
             propertyRepository.delete(property);
+            log.info("Property deleted successfully: {}", property);
             return new ResponseEntity<>(new ResponseDTO("Property deleted successfully",null),HttpStatus.NO_CONTENT);
         }
     }
@@ -62,6 +67,7 @@ public class PropertyServiceImpl implements IPropertyService {
     @Override
     public ResponseEntity<ResponseDTO> updateProperty(Property property,PropertyDTO dto, User user, Long id) {
         if(!property.getUser().getId().equals(user.getId())){
+            log.warn("User not authenticated for property ID: {}", id);
             return new ResponseEntity<>(new ResponseDTO("User not authenticated",null),HttpStatus.UNAUTHORIZED);
         }
 
@@ -82,6 +88,7 @@ public class PropertyServiceImpl implements IPropertyService {
             property.setExpenses(property.getExpenses());
         }
         propertyRepository.save(property);
+        log.info("Property updated successfully: {}", property);
         return new ResponseEntity<>(new ResponseDTO("Property Updated !",property), HttpStatus.OK);
     }
 
@@ -98,6 +105,7 @@ public class PropertyServiceImpl implements IPropertyService {
 
         if(property == null) return new ResponseEntity<>(new ResponseDTO("Property not found !",null),HttpStatus.NOT_FOUND);
 
+        log.info("Property fetched successfully: {}", property);
         return new ResponseEntity<>(new ResponseDTO("Property fetched !",property),HttpStatus.OK);
 
     }

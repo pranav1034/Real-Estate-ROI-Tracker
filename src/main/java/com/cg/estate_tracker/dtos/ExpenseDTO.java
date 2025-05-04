@@ -15,7 +15,6 @@ public class ExpenseDTO {
     private Long propertyId;
 
     @NotNull(message = "Expense date is required")
-    @PastOrPresent(message = "Expense date cannot be in the future")
     private LocalDate expenseDate;
 
     @NotNull(message = "Expense amount is required")

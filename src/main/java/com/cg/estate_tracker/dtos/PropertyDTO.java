@@ -28,11 +28,11 @@ public class PropertyDTO {
     @NotNull(message = "Purchase date must not be null")
     private LocalDate purchaseDate;
 
-    @NotNull(message = "Rent logs list must not be null")
-    @Size(min = 0, message = "Rent logs list must not be null")
+//    @NotNull(message = "Rent logs list must not be null")
+//    @Size(min = 0, message = "Rent logs list must not be null")
     private List<RentLog> rentLogs;
 
-    @NotNull(message = "Expenses list must not be null")
-    @Size(min = 0, message = "Expenses list must not be null")
+//    @NotNull(message = "Expenses list must not be null")
+//    @Size(min = 0, message = "Expenses list must not be null")
     private List<Expense> expenses;
 }

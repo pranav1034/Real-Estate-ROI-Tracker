@@ -16,7 +16,6 @@ public class RentDTO {
     private long propertyID;
 
     @NotNull(message = "Date received is required")
-    @PastOrPresent(message = "Date received cannot be in the future")
     private LocalDate dateReceived;
 
     @NotNull(message = "Amount is required")
