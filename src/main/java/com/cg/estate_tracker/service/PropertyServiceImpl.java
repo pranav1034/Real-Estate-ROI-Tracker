@@ -21,6 +21,7 @@ public class PropertyServiceImpl implements IPropertyService {
     @Autowired
     private UserRepository userRepository;
 
+    @Override
     public ResponseEntity<ResponseDTO> addProperty(PropertyDTO property, User user){
         Property newProperty = new Property();
         newProperty.setTitle(property.getTitle());
@@ -43,7 +44,7 @@ public class PropertyServiceImpl implements IPropertyService {
         propertyRepository.save(newProperty);
         user.getProperties().add(newProperty);
         userRepository.save(user);
-        return new ResponseEntity<>(new ResponseDTO("New Property Added !",newProperty), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDTO("New Property Added !",property), HttpStatus.CREATED);
     }
 
     @Override

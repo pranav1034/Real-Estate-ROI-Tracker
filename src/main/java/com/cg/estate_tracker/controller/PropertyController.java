@@ -6,6 +6,7 @@ import com.cg.estate_tracker.model.User;
 import com.cg.estate_tracker.repository.PropertyRepository;
 import com.cg.estate_tracker.repository.UserRepository;
 import com.cg.estate_tracker.service.PropertyServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class PropertyController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseDTO> addNewProperty(@RequestBody PropertyDTO dto){
+    public ResponseEntity<ResponseDTO> addNewProperty(@Valid @RequestBody PropertyDTO dto){
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
@@ -71,7 +72,7 @@ public class PropertyController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ResponseDTO> updateProperty(@RequestBody PropertyDTO dto,@PathVariable Long id){
+    public ResponseEntity<ResponseDTO> updateProperty(@Valid @RequestBody PropertyDTO dto,@PathVariable Long id){
        try{
            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
            String email = authentication.getName();
