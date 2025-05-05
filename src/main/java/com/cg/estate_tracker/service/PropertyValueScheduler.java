@@ -16,7 +16,7 @@ public class PropertyValueScheduler {
     @Autowired
     private PropertyRepository propertyRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 1 * ?")
     public void increaseValueAfterEachMonthSincePurchase() {
 
         LocalDate today = LocalDate.now();
