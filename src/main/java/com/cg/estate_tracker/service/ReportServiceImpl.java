@@ -29,12 +29,26 @@ public class ReportServiceImpl implements IReportService {
     private PropertyRepository propertyRepository;
 
     @Autowired
+    private MailService mailService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Override
     public byte[] generateUserReport(User user, LocalDate date) {
         List<Property> properties = propertyRepository.findByUserId(user.getId());
-        return buildPdfResponse(user, date, properties);
+        byte[] pdf = buildPdfResponse(user, date, properties);
+
+        // Send PDF to user's email
+        mailService.sendPdfWithAttachment(
+                user.getEmail(),
+                "Your Estate Tracker User Report",
+                "Please find attached your estate tracker user report.",
+                pdf,
+                "user_report.pdf"
+        );
+
+        return pdf;
     }
 
     @Override
@@ -45,9 +59,19 @@ public class ReportServiceImpl implements IReportService {
             throw new RuntimeException("Property not found or does not belong to the user");
         }
 
-        return buildPdfResponse(user, date, List.of(propertyOpt.get()));
-    }
+        byte[] pdf = buildPdfResponse(user, date, List.of(propertyOpt.get()));
 
+        // Send PDF to user's email
+        mailService.sendPdfWithAttachment(
+                user.getEmail(),
+                "Your Property Report - " + propertyOpt.get().getTitle(),
+                "Please find attached the report for your property.",
+                pdf,
+                "property_report_" + propertyId + ".pdf"
+        );
+
+        return pdf;
+    }
     private byte[] buildPdfResponse(User user, LocalDate date, List<Property> properties) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(out);
