@@ -88,12 +88,12 @@ public class ReportServiceImpl implements IReportService {
             document.add(new Paragraph("Location: " + property.getLocation()));
             document.add(new Paragraph("Size: " + property.getSize() + " sq ft"));
             document.add(new Paragraph("Purchase Date: " + property.getPurchaseDate()));
-            document.add(new Paragraph("Purchase Price: ₹" + property.getPurchasePrice()));
+            document.add(new Paragraph("Purchase Price: Rs" + property.getPurchasePrice()));
 
             double appreciationRate = 0.01;
             long monthsBetween = Period.between(property.getPurchaseDate(), date).getMonths();
             double estimatedMarketValue = property.getPurchasePrice() * Math.pow(1 + appreciationRate, monthsBetween);
-            document.add(new Paragraph("Estimated Market Value (as of " + date + "): ₹" + String.format("%.2f", estimatedMarketValue)));
+            document.add(new Paragraph("Estimated Market Value (as of " + date + "): Rs" + String.format("%.2f", estimatedMarketValue)));
 
             LocalDate firstRentLogDate = property.getRentLogs().stream()
                     .map(RentLog::getDateReceived)
@@ -125,9 +125,9 @@ public class ReportServiceImpl implements IReportService {
 
             Table metrics = new Table(2);
             metrics.addCell("Total Rent Received");
-            metrics.addCell("₹" + totalRent);
+            metrics.addCell("Rs" + totalRent);
             metrics.addCell("Total Expenses");
-            metrics.addCell("₹" + totalExpense);
+            metrics.addCell("Rs" + totalExpense);
             metrics.addCell("ROI (%)");
             metrics.addCell(String.format("%.2f%%", roi));
             metrics.addCell("Rental Yield (%)");
