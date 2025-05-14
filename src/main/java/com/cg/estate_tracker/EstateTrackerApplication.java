@@ -13,7 +13,7 @@ public class EstateTrackerApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(EstateTrackerApplication.class, args);
-		log.info("Estate Tracker App Started in Environment");
+		log.info("Estate Tracker App Started in Environment ");
 	}
 
 }
